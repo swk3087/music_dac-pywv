@@ -1,0 +1,76 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Inter", "Noto Sans KR", "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #1e2736, #0c1018 65%);
+  color: #ffffff;
+}
+
+.container {
+  width: min(960px, 92vw);
+  padding: 32px;
+  background: rgba(13, 17, 24, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 28px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: clamp(15px, 2vw, 18px);
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.nav-button {
+  padding: 18px 22px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.nav-button:hover {
+  transform: translateY(-3px);
+  border-color: rgba(29, 185, 84, 0.6);
+  background: rgba(29, 185, 84, 0.16);
+}
+
+.nav-button.wide {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+.status-bar {
+  margin-top: 36px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+}

@@ -1,0 +1,4 @@
+pywebview
+spotipy
+google-generativeai
+python-dotenv

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Music DAC · AI Search</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script defer src="../js/main.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="page-header">
+        <button class="back-button" data-screen="home">← Home</button>
+        <div class="header-text">
+          <h1>AI Smart Search</h1>
+          <p class="subtitle">Describe the mood you want, and Gemini suggests Spotify queries.</p>
+        </div>
+      </header>
+
+      <section class="search-panel">
+        <form id="ai-form">
+          <input
+            id="ai-input"
+            type="text"
+            placeholder="e.g. rainy day jazz, workout pump up, chill evening"
+            autocomplete="off"
+          />
+          <button type="submit">Get Suggestions</button>
+        </form>
+        <p id="ai-hint" class="hint">Ask for a vibe or scenario to get started.</p>
+      </section>
+
+      <section class="suggestions" id="suggestions"></section>
+
+      <section>
+        <ul id="results-list" class="result-list"></ul>
+      </section>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+/.cache
+/.env
+/__pycache__
+/.env copy
+/.cache copy
+/.venv
+/screens/__pycache__
+*.pyc
+linux
+/0.cache
+/0.env
+.git

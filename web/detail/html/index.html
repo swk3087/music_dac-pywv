@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Music DAC · Detail View</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script defer src="../js/main.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="page-header">
+        <button id="back-button">← Back</button>
+        <div class="header-text">
+          <h1 id="detail-title">Loading…</h1>
+          <p id="detail-subtitle" class="subtitle"></p>
+          <p id="detail-stats" class="subtitle muted"></p>
+        </div>
+      </header>
+
+      <section class="actions">
+        <button id="play-all" disabled>▶ Play All</button>
+      </section>
+
+      <section>
+        <ul id="track-list" class="track-list"></ul>
+      </section>
+
+      <footer class="status">
+        <span id="detail-status">Preparing detail view…</span>
+      </footer>
+    </div>
+  </body>
+</html>

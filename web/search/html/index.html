@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Music DAC · Search</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script defer src="../js/main.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="page-header">
+        <button class="back-button" data-screen="home">← Home</button>
+        <div class="header-text">
+          <h1>General Search</h1>
+          <p class="subtitle">Search Spotify tracks and start playback instantly.</p>
+        </div>
+      </header>
+
+      <section class="search-panel">
+        <form id="search-form">
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Search tracks, albums, or artists"
+            autocomplete="off"
+          />
+          <button type="submit">Search</button>
+        </form>
+        <p id="search-hint" class="hint">Enter a keyword to begin.</p>
+      </section>
+
+      <section>
+        <ul id="results-list" class="result-list"></ul>
+      </section>
+    </div>
+  </body>
+</html>

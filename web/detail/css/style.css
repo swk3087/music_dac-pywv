@@ -1,0 +1,149 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Inter", "Noto Sans KR", "Segoe UI", sans-serif;
+  background: linear-gradient(140deg, #0f141f, #05080d 70%);
+  color: #ffffff;
+}
+
+.container {
+  width: min(960px, 92vw);
+  padding: 32px;
+  background: rgba(10, 13, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 26px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+#back-button {
+  border: none;
+  border-radius: 14px;
+  padding: 10px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  cursor: pointer;
+}
+
+#back-button:hover {
+  background: rgba(29, 185, 84, 0.25);
+}
+
+.header-text h1 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 800;
+}
+
+.subtitle {
+  margin: 4px 0;
+}
+
+.muted {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.actions {
+  margin: 26px 0 18px;
+  display: flex;
+  gap: 12px;
+}
+
+.actions button {
+  border: none;
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(29, 185, 84, 0.85);
+  color: #0d1118;
+}
+
+.actions button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.track-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.track-item {
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.track-item:hover {
+  border-color: rgba(29, 185, 84, 0.7);
+  background: rgba(29, 185, 84, 0.12);
+}
+
+.track-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.track-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.track-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.track-actions button {
+  border: none;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(29, 185, 84, 0.85);
+  color: #0d1118;
+}
+
+.track-actions button:hover {
+  filter: brightness(1.08);
+}
+
+.status {
+  margin-top: 28px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.68);
+  text-align: center;
+  font-size: 15px;
+}

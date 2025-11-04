@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Music DAC · Artists</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script defer src="../js/main.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="page-header">
+        <button class="back-button" data-screen="home">← Home</button>
+        <div class="header-text">
+          <h1>Followed Artists</h1>
+          <p class="subtitle">Tap an artist to explore their top tracks.</p>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="list-panel">
+          <h2>Artists</h2>
+          <ul id="artist-list" class="item-list"></ul>
+        </section>
+        <section class="detail-panel">
+          <div class="detail-header">
+            <div>
+              <h2 id="detail-title">Choose an artist</h2>
+              <p id="detail-subtitle" class="muted">Top tracks will appear here.</p>
+              <p id="detail-stats" class="muted"></p>
+            </div>
+            <div class="detail-actions">
+              <button id="play-all" disabled>▶ Play All</button>
+              <button id="open-detail" disabled>Open Detail</button>
+            </div>
+          </div>
+          <ul id="track-list" class="track-list"></ul>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

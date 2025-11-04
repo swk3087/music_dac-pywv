@@ -1,4 +1,3 @@
-const api = window.pywebview ? window.pywebview.api : null;
 const backButton = document.getElementById("back-button");
 const titleEl = document.getElementById("detail-title");
 const subtitleEl = document.getElementById("detail-subtitle");
@@ -24,7 +23,11 @@ function safeJsonParse(text) {
 }
 
 async function navigate(screen) {
-  if (!api?.navigate) return;
+  const api = getApi();
+  if (!api?.navigate) {
+    statusEl.textContent = "Bridge not ready. Try again shortly.";
+    return;
+  }
   try {
     await api.navigate(screen);
   } catch (error) {
@@ -99,7 +102,12 @@ function renderTracks(tracks) {
 }
 
 async function playTrack(uri) {
-  if (!uri || !api?.play_track) return;
+  if (!uri) return;
+  const api = getApi();
+  if (!api?.play_track) {
+    statusEl.textContent = "Playback bridge not ready.";
+    return;
+  }
   try {
     const result = await api.play_track(uri);
     if (result?.success) {
@@ -111,7 +119,12 @@ async function playTrack(uri) {
 }
 
 async function playAll() {
-  if (!currentTracks.length || !api?.play_tracks) return;
+  if (!currentTracks.length) return;
+  const api = getApi();
+  if (!api?.play_tracks) {
+    statusEl.textContent = "Playback bridge not ready.";
+    return;
+  }
   const uris = currentTracks.map((track) => track.uri).filter(Boolean);
   if (!uris.length) return;
 
@@ -129,15 +142,21 @@ async function fetchTracks() {
   if (!payload) return;
 
   try {
+    const api = getApi();
+    if (!api) {
+      statusEl.textContent = "Bridge not ready yet. Please retry.";
+      return;
+    }
+
     let response = null;
     if (payload.type === "playlist") {
-      response = await api?.get_playlist_tracks(payload.id);
+      response = await api.get_playlist_tracks(payload.id);
       renderTracks(response?.tracks ?? []);
     } else if (payload.type === "album") {
-      response = await api?.get_album_tracks(payload.id);
+      response = await api.get_album_tracks(payload.id);
       renderTracks(response?.tracks ?? []);
     } else if (payload.type === "artist") {
-      response = await api?.get_artist_top_tracks(payload.id);
+      response = await api.get_artist_top_tracks(payload.id);
       renderTracks(response?.tracks ?? []);
     } else {
       statusEl.textContent = "Unsupported detail type.";
@@ -159,3 +178,11 @@ if (playAllButton) {
 
 initialiseHeader();
 fetchTracks();
+
+function getApi() {
+  return window.pywebview?.api ?? null;
+}
+
+if (!getApi()) {
+  window.addEventListener("pywebviewready", fetchTracks);
+}

@@ -1,4 +1,3 @@
-const api = window.pywebview ? window.pywebview.api : null;
 const backButton = document.querySelector(".back-button");
 const albumList = document.getElementById("album-list");
 const trackList = document.getElementById("track-list");
@@ -12,7 +11,11 @@ let currentAlbum = null;
 let currentTracks = [];
 
 async function navigate(screen) {
-  if (!api?.navigate) return;
+  const api = getApi();
+  if (!api?.navigate) {
+    setDetailMessage("Bridge not ready. Try again shortly.");
+    return;
+  }
   try {
     await api.navigate(screen);
   } catch (error) {
@@ -33,6 +36,7 @@ function setDetail(album) {
   detailTitle.textContent = album.name ?? "Untitled album";
   detailSubtitle.textContent = album.artists ?? "Various artists";
   detailStats.textContent = album.release_date ? `Released ${album.release_date}` : "";
+  detailStats.classList.remove("muted");
   playAllButton.disabled = false;
   openDetailButton.disabled = false;
 }
@@ -101,7 +105,12 @@ function renderTracks(tracks) {
 }
 
 async function playTrack(uri) {
-  if (!uri || !api?.play_track) return;
+  if (!uri) return;
+  const api = getApi();
+  if (!api?.play_track) {
+    setDetailMessage("Playback bridge not ready.");
+    return;
+  }
   try {
     const result = await api.play_track(uri);
     if (result?.success) {
@@ -124,7 +133,12 @@ async function selectAlbum(album, element) {
   trackList.innerHTML = "<li>Loading tracks…</li>";
 
   try {
-    const response = await api?.get_album_tracks(album.id);
+    const api = getApi();
+    if (!api?.get_album_tracks) {
+      trackList.innerHTML = "<li>Bridge not ready. Please retry.</li>";
+      return;
+    }
+    const response = await api.get_album_tracks(album.id);
     const tracks = response?.tracks ?? [];
     currentTracks = tracks.filter((track) => track?.uri);
     renderTracks(tracks);
@@ -135,7 +149,12 @@ async function selectAlbum(album, element) {
 }
 
 async function playAll() {
-  if (!currentTracks.length || !api?.play_tracks) return;
+  if (!currentTracks.length) return;
+  const api = getApi();
+  if (!api?.play_tracks) {
+    setDetailMessage("Playback bridge not ready yet.");
+    return;
+  }
   const uris = currentTracks.map((track) => track.uri).filter(Boolean);
   if (!uris.length) return;
 
@@ -167,7 +186,12 @@ function openDetail() {
 async function loadAlbums() {
   albumList.innerHTML = "<li>Loading albums…</li>";
   try {
-    const response = await api?.get_saved_albums();
+    const api = getApi();
+    if (!api?.get_saved_albums) {
+      albumList.innerHTML = "<li>Bridge not ready. Please retry shortly.</li>";
+      return;
+    }
+    const response = await api.get_saved_albums();
     renderAlbums(response?.albums ?? []);
   } catch (error) {
     console.error("Failed to fetch albums", error);
@@ -188,3 +212,16 @@ if (openDetailButton) {
 }
 
 loadAlbums();
+
+function setDetailMessage(message) {
+  detailStats.textContent = message;
+  detailStats.classList.add("muted");
+}
+
+function getApi() {
+  return window.pywebview?.api ?? null;
+}
+
+if (!getApi()) {
+  window.addEventListener("pywebviewready", loadAlbums);
+}

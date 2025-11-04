@@ -117,31 +117,71 @@ class MusicDACApp:
             return
 
         try:
-            import gi  # type: ignore
-            gi.require_version("Gtk", "3.0")
-            gi.require_version("WebKit2", "4.0")
-            from gi.repository import Gtk, WebKit2  # noqa: F401
+            _require_gtk_webkit("4.0")
         except ValueError:
             # Try newer WebKit2 ABI (Ubuntu 24.04+)
-            try:
-                import gi  # type: ignore
-                gi.require_version("Gtk", "3.0")
-                gi.require_version("WebKit2", "4.1")
-                from gi.repository import Gtk, WebKit2  # noqa: F401
-            except Exception as exc:  # pragma: no cover - env specific
+            if not _require_gtk_webkit_safely("4.1"):
                 raise RuntimeError(
                     "GTK/WebKit2 bindings for Python are required. Install them with:\n"
                     "  sudo apt update && sudo apt install python3-gi gir1.2-gtk-3.0 "
                     "libwebkit2gtk-4.1-0 gir1.2-webkit2-4.1\n"
                     "If 4.1 packages are unavailable, use the 4.0 variants instead."
-                ) from exc
-        except ModuleNotFoundError as exc:
-            raise RuntimeError(
-                "GTK bindings for Python are required. Install them with:\n"
-                "  sudo apt update && sudo apt install python3-gi gir1.2-gtk-3.0 "
-                "libwebkit2gtk-4.1-0 gir1.2-webkit2-4.1\n"
-                "If 4.1 packages are unavailable, use the 4.0 variants instead."
-            ) from exc
+                )
+        except ModuleNotFoundError:
+            if not _load_gi_with_system_paths():
+                raise RuntimeError(
+                    "GTK bindings for Python are required. Install them with:\n"
+                    "  sudo apt update && sudo apt install python3-gi gir1.2-gtk-3.0 "
+                    "libwebkit2gtk-4.1-0 gir1.2-webkit2-4.1\n"
+                    "If you already installed them, recreate the virtualenv with "
+                    "'--system-site-packages' so it can access system dist-packages."
+                )
+
+
+def _require_gtk_webkit(version: str) -> None:
+    import gi  # type: ignore
+
+    gi.require_version("Gtk", "3.0")
+    gi.require_version("WebKit2", version)
+    from gi.repository import Gtk, WebKit2  # noqa: F401
+
+
+def _require_gtk_webkit_safely(version: str) -> bool:
+    try:
+        _require_gtk_webkit(version)
+        return True
+    except (ModuleNotFoundError, ValueError):
+        return False
+
+
+def _load_gi_with_system_paths() -> bool:
+    if not _add_system_dist_packages():
+        return False
+
+    if _require_gtk_webkit_safely("4.0"):
+        return True
+    return _require_gtk_webkit_safely("4.1")
+
+
+def _add_system_dist_packages() -> bool:
+    """
+    Bring common system dist-packages paths (where gi lives) into sys.path.
+    """
+    import site
+
+    major, minor = sys.version_info[:2]
+    candidates = [
+        Path(f"/usr/lib/python{major}.{minor}/dist-packages"),
+        Path("/usr/lib/python3/dist-packages"),
+        Path(sys.prefix).parent / "lib" / f"python{major}.{minor}" / "dist-packages",
+    ]
+
+    added = False
+    for candidate in candidates:
+        if candidate.exists() and str(candidate) not in sys.path:
+            site.addsitedir(str(candidate))
+            added = True
+    return added
 
 
 class MusicDACApi:

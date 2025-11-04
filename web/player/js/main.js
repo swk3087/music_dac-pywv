@@ -1,4 +1,3 @@
-const api = window.pywebview ? window.pywebview.api : null;
 const backButton = document.querySelector(".back-button");
 const artwork = document.getElementById("artwork");
 const trackTitle = document.getElementById("track-title");
@@ -19,7 +18,11 @@ let playbackPoll = null;
 let volumeDebounce = null;
 
 async function navigate(screen) {
-  if (!api?.navigate) return;
+  const api = getApi();
+  if (!api?.navigate) {
+    statusText.textContent = "Bridge not ready yet. Try again shortly.";
+    return;
+  }
   try {
     await api.navigate(screen);
   } catch (error) {
@@ -79,7 +82,11 @@ function updateUi(playback) {
 }
 
 async function updatePlayback() {
-  if (!api?.get_playback) return;
+  const api = getApi();
+  if (!api?.get_playback) {
+    statusText.textContent = "Waiting for playback bridge…";
+    return;
+  }
   try {
     const response = await api.get_playback();
     updateUi(response?.playback ?? null);
@@ -89,7 +96,11 @@ async function updatePlayback() {
 }
 
 async function togglePlayPause() {
-  if (!api) return;
+  const api = getApi();
+  if (!api) {
+    statusText.textContent = "Playback bridge not ready.";
+    return;
+  }
   try {
     if (isPlaying) {
       const result = await api.pause();
@@ -112,7 +123,11 @@ async function togglePlayPause() {
 }
 
 async function previousTrack() {
-  if (!api?.previous_track) return;
+  const api = getApi();
+  if (!api?.previous_track) {
+    statusText.textContent = "Bridge not ready.";
+    return;
+  }
   try {
     await api.previous_track();
     statusText.textContent = "Skipping to previous track…";
@@ -123,7 +138,11 @@ async function previousTrack() {
 }
 
 async function nextTrack() {
-  if (!api?.next_track) return;
+  const api = getApi();
+  if (!api?.next_track) {
+    statusText.textContent = "Bridge not ready.";
+    return;
+  }
   try {
     await api.next_track();
     statusText.textContent = "Skipping to next track…";
@@ -140,6 +159,7 @@ function updateVolumeLabel(value) {
 }
 
 function scheduleVolumeUpdate(value) {
+  const api = getApi();
   if (!api?.set_volume) return;
   if (volumeDebounce) {
     clearTimeout(volumeDebounce);
@@ -185,3 +205,11 @@ window.addEventListener("beforeunload", () => {
     clearInterval(playbackPoll);
   }
 });
+
+function getApi() {
+  return window.pywebview?.api ?? null;
+}
+
+if (!getApi()) {
+  window.addEventListener("pywebviewready", updatePlayback);
+}

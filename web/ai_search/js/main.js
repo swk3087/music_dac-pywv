@@ -1,4 +1,3 @@
-const api = window.pywebview ? window.pywebview.api : null;
 const backButton = document.querySelector(".back-button");
 const form = document.getElementById("ai-form");
 const input = document.getElementById("ai-input");
@@ -19,7 +18,11 @@ function setHint(message, tone = "info") {
 }
 
 async function navigate(screen) {
-  if (!api?.navigate) return;
+  const api = getApi();
+  if (!api?.navigate) {
+    setHint("Bridge not ready. Please try again shortly.", "error");
+    return;
+  }
   try {
     await api.navigate(screen);
   } catch (error) {
@@ -28,7 +31,11 @@ async function navigate(screen) {
 }
 
 async function playTrack(uri) {
-  if (!api?.play_track) return;
+  const api = getApi();
+  if (!api?.play_track) {
+    setHint("Playback bridge not ready yet.", "error");
+    return;
+  }
   try {
     const result = await api.play_track(uri);
     if (!result?.success) {
@@ -87,7 +94,12 @@ async function runSearch(query) {
   resultsList.innerHTML = "";
 
   try {
-    const response = await api?.search_tracks(query);
+    const api = getApi();
+    if (!api?.search_tracks) {
+      setHint("Bridge not ready. Please wait a moment.", "error");
+      return;
+    }
+    const response = await api.search_tracks(query);
     renderResults(response?.tracks ?? []);
   } catch (error) {
     console.error(error);
@@ -126,7 +138,12 @@ async function requestSuggestions(event) {
   resultsList.innerHTML = "";
 
   try {
-    const response = await api?.ai_suggestions(query);
+    const api = getApi();
+    if (!api?.ai_suggestions) {
+      setHint("Bridge not ready yet. Try again in a moment.", "error");
+      return;
+    }
+    const response = await api.ai_suggestions(query);
     renderSuggestions(response?.suggestions ?? []);
     setHint("Tap a suggestion to search Spotify.", "success");
   } catch (error) {
@@ -144,3 +161,11 @@ if (form) {
 }
 
 setHint("Ask for a vibe or scenario to get started.");
+
+function getApi() {
+  return window.pywebview?.api ?? null;
+}
+
+if (!getApi()) {
+  window.addEventListener("pywebviewready", () => setHint("Bridge ready. Ask for a vibe to begin.", "info"));
+}

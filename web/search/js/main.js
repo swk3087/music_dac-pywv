@@ -1,4 +1,3 @@
-const api = window.pywebview ? window.pywebview.api : null;
 const backButton = document.querySelector(".back-button");
 const form = document.getElementById("search-form");
 const input = document.getElementById("search-input");
@@ -18,7 +17,11 @@ function setHint(message, tone = "info") {
 }
 
 async function navigate(screen) {
-  if (!api?.navigate) return;
+  const api = getApi();
+  if (!api?.navigate) {
+    setHint("Bridge not ready. Please try again in a moment.", "error");
+    return;
+  }
   try {
     await api.navigate(screen);
   } catch (error) {
@@ -27,7 +30,11 @@ async function navigate(screen) {
 }
 
 async function playTrack(uri) {
-  if (!api?.play_track) return;
+  const api = getApi();
+  if (!api?.play_track) {
+    setHint("Playback bridge not ready.", "error");
+    return;
+  }
   try {
     const result = await api.play_track(uri);
     if (!result?.success) {
@@ -93,7 +100,12 @@ async function performSearch(event) {
   resultsList.innerHTML = "";
 
   try {
-    const response = await api?.search_tracks(query);
+    const api = getApi();
+    if (!api?.search_tracks) {
+      setHint("Bridge not ready yet. Please retry shortly.", "error");
+      return;
+    }
+    const response = await api.search_tracks(query);
     renderResults(response?.tracks ?? []);
   } catch (error) {
     console.error(error);
@@ -110,3 +122,11 @@ if (form) {
 }
 
 setHint("Enter a keyword to begin.");
+
+function getApi() {
+  return window.pywebview?.api ?? null;
+}
+
+if (!getApi()) {
+  window.addEventListener("pywebviewready", () => setHint("Bridge ready. Enter a keyword to begin."));
+}

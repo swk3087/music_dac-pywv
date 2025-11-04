@@ -1,4 +1,3 @@
-const api = window.pywebview ? window.pywebview.api : null;
 const backButton = document.querySelector(".back-button");
 const artistList = document.getElementById("artist-list");
 const trackList = document.getElementById("track-list");
@@ -12,7 +11,11 @@ let currentArtist = null;
 let currentTracks = [];
 
 async function navigate(screen) {
-  if (!api?.navigate) return;
+  const api = getApi();
+  if (!api?.navigate) {
+    setDetailMessage("Bridge not ready. Try again shortly.");
+    return;
+  }
   try {
     await api.navigate(screen);
   } catch (error) {
@@ -33,6 +36,7 @@ function setDetail(artist) {
   detailTitle.textContent = artist.name ?? "Unknown artist";
   detailSubtitle.textContent = artist.genres?.length ? artist.genres.join(", ") : "No genres listed";
   detailStats.textContent = artist.followers ? `${artist.followers.toLocaleString()} followers` : "";
+  detailStats.classList.remove("muted");
   playAllButton.disabled = false;
   openDetailButton.disabled = false;
 }
@@ -102,7 +106,12 @@ function renderTracks(tracks) {
 }
 
 async function playTrack(uri) {
-  if (!uri || !api?.play_track) return;
+  if (!uri) return;
+  const api = getApi();
+  if (!api?.play_track) {
+    setDetailMessage("Playback bridge not ready.");
+    return;
+  }
   try {
     const result = await api.play_track(uri);
     if (result?.success) {
@@ -125,7 +134,12 @@ async function selectArtist(artist, element) {
   trackList.innerHTML = "<li>Loading top tracks…</li>";
 
   try {
-    const response = await api?.get_artist_top_tracks(artist.id);
+    const api = getApi();
+    if (!api?.get_artist_top_tracks) {
+      trackList.innerHTML = "<li>Bridge not ready. Please retry.</li>";
+      return;
+    }
+    const response = await api.get_artist_top_tracks(artist.id);
     const tracks = response?.tracks ?? [];
     currentTracks = tracks.filter((track) => track?.uri);
     renderTracks(tracks);
@@ -136,7 +150,12 @@ async function selectArtist(artist, element) {
 }
 
 async function playAll() {
-  if (!currentTracks.length || !api?.play_tracks) return;
+  if (!currentTracks.length) return;
+  const api = getApi();
+  if (!api?.play_tracks) {
+    setDetailMessage("Playback bridge not ready yet.");
+    return;
+  }
   const uris = currentTracks.map((track) => track.uri).filter(Boolean);
   if (!uris.length) return;
 
@@ -168,7 +187,12 @@ function openDetail() {
 async function loadArtists() {
   artistList.innerHTML = "<li>Loading artists…</li>";
   try {
-    const response = await api?.get_followed_artists();
+    const api = getApi();
+    if (!api?.get_followed_artists) {
+      artistList.innerHTML = "<li>Bridge not ready. Please retry shortly.</li>";
+      return;
+    }
+    const response = await api.get_followed_artists();
     renderArtists(response?.artists ?? []);
   } catch (error) {
     console.error("Failed to fetch artists", error);
@@ -189,3 +213,16 @@ if (openDetailButton) {
 }
 
 loadArtists();
+
+function setDetailMessage(message) {
+  detailStats.textContent = message;
+  detailStats.classList.add("muted");
+}
+
+function getApi() {
+  return window.pywebview?.api ?? null;
+}
+
+if (!getApi()) {
+  window.addEventListener("pywebviewready", loadArtists);
+}

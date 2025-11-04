@@ -64,7 +64,7 @@ class MusicDACApp:
         print("Press Ctrl+C to quit\n")
 
         try:
-            webview.start(http_server=True, debug=config.DEBUG_MODE, gui=self._default_gui())
+            webview.start(http_server=False, debug=config.DEBUG_MODE, gui=self._default_gui())
         except webview.errors.WebViewException as exc:
             print(
                 "\n⚠️  Unable to initialise a GUI backend for pywebview.\n"
@@ -100,8 +100,8 @@ class MusicDACApp:
             html_dir = path / "html"
             index_file = html_dir / "index.html"
             if index_file.exists():
-                relative_url = str(Path("web") / path.name / "html" / "index.html")
-                screens[path.name.lower()] = Screen(name=path.name, url=relative_url)
+                absolute_url = index_file.resolve().as_uri()
+                screens[path.name.lower()] = Screen(name=path.name, url=absolute_url)
 
         return screens
 

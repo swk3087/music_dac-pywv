@@ -1,0 +1,22 @@
+
+# Music Streaming DAC - Environment Variables
+# Copy this file to .env and fill in your API keys
+
+# ==============================================
+# Spotify API Configuration
+# ==============================================
+# Get these from: https://developer.spotify.com/dashboard
+SPOTIFY_CLIENT_ID=9fe58375f7f246d198521ad666306ecf
+SPOTIFY_CLIENT_SECRET=744577aa917e4a62ac68c6e8e3a52d0c
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:8888/callback
+
+# ==============================================
+# Gemini AI Configuration
+# ==============================================
+# Get this from: https://makersuite.google.com/app/apikey
+GEMINI_API_KEY=AIzaSyDlhWSVvaUhkDiLGhNkTxGOkBURMCDoTBQ
+# ==============================================
+# Optional Configuration
+# ==============================================
+# Enable debug mode (True/False)
+DEBUG_MODE=False

@@ -1,4 +1,6 @@
 const statusText = document.getElementById("status-text");
+const navButtons = Array.from(document.querySelectorAll(".nav-button"));
+let focusedIndex = 0;
 
 function setStatus(message) {
   if (statusText) {
@@ -27,12 +29,57 @@ async function navigate(screen) {
   setStatus(`Switched to ${screen}.`);
 }
 
-document.querySelectorAll(".nav-button").forEach((button) => {
+navButtons.forEach((button, index) => {
   button.addEventListener("click", () => {
     const screen = button.dataset.screen;
     navigate(screen);
   });
+
+  button.addEventListener("focus", () => {
+    focusedIndex = index;
+    updateFocusedState();
+  });
 });
+
+function updateFocusedState() {
+  navButtons.forEach((button, index) => {
+    button.classList.toggle("is-focused", index === focusedIndex);
+  });
+}
+
+function focusButton(index) {
+  if (!navButtons.length) return;
+  focusedIndex = (index + navButtons.length) % navButtons.length;
+  navButtons[focusedIndex].focus({ preventScroll: true });
+  updateFocusedState();
+}
+
+function handleKeyNavigation(event) {
+  switch (event.key) {
+    case "ArrowDown":
+    case "ArrowRight":
+      event.preventDefault();
+      focusButton(focusedIndex + 1);
+      break;
+    case "ArrowUp":
+    case "ArrowLeft":
+      event.preventDefault();
+      focusButton(focusedIndex - 1);
+      break;
+    case "Enter":
+    case " ":
+      event.preventDefault();
+      navButtons[focusedIndex]?.click();
+      break;
+    default:
+      break;
+  }
+}
+
+if (navButtons.length) {
+  focusButton(focusedIndex);
+  document.addEventListener("keydown", handleKeyNavigation);
+}
 
 setStatus("Ready.");
 

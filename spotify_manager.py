@@ -1,6 +1,6 @@
 """
 Spotify API Manager
-Spotify API 관리 및 음악 재생 제어
+Spotify API ��리 및 음악 재생 제어
 """
 
 from __future__ import annotations
@@ -19,6 +19,7 @@ class SpotifyManager:
     def __init__(self) -> None:
         self.sp: Optional[spotipy.Spotify] = None
         self.current_playback: Optional[Dict[str, Any]] = None
+        self.auth_manager: Optional[SpotifyOAuth] = None
         self.authenticate()
 
     # ==============================================
@@ -27,7 +28,7 @@ class SpotifyManager:
     def authenticate(self) -> None:
         """Spotify 인증"""
         try:
-            auth_manager = SpotifyOAuth(
+            self.auth_manager = SpotifyOAuth(
                 client_id=config.SPOTIFY_CLIENT_ID,
                 client_secret=config.SPOTIFY_CLIENT_SECRET,
                 redirect_uri=config.SPOTIFY_REDIRECT_URI,
@@ -35,7 +36,7 @@ class SpotifyManager:
                 open_browser=True,
             )
 
-            self.sp = spotipy.Spotify(auth_manager=auth_manager)
+            self.sp = spotipy.Spotify(auth_manager=self.auth_manager)
 
             # Test connection
             user = self.sp.current_user()
@@ -49,6 +50,34 @@ class SpotifyManager:
         if not self.sp:
             raise RuntimeError("Spotify client is not authenticated")
         return self.sp
+
+    # ==============================================
+    # Web Playback SDK Token Management
+    # ==============================================
+    def get_access_token(self) -> Optional[str]:
+        """
+        Web Playback SDK용 액세스 토큰 발급
+        JavaScript에서 플레이어를 생성할 때 필요
+        """
+        if not self.auth_manager:
+            print("❌ Auth manager not initialized")
+            return None
+        
+        try:
+            token_info = self.auth_manager.get_cached_token()
+            if token_info and not self.auth_manager.is_token_expired(token_info):
+                return token_info.get("access_token")
+            
+            # 토큰이 만료되었거나 없으면 새로 발급
+            token_info = self.auth_manager.refresh_access_token(
+                self.auth_manager.get_cached_token().get("refresh_token")
+                if self.auth_manager.get_cached_token()
+                else None
+            )
+            return token_info.get("access_token") if token_info else None
+        except Exception as exc:
+            print(f"❌ Failed to get access token: {exc}")
+            return None
 
     # ==============================================
     # Search Functions
@@ -179,7 +208,7 @@ class SpotifyManager:
             print("⏭️  Next track")
             return True
         except Exception as exc:
-            print(f"❌ Next track failed: {exc}")
+            print(f"��� Next track failed: {exc}")
             return False
 
     def previous_track(self) -> bool:

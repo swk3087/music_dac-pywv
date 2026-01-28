@@ -29,6 +29,14 @@ SPOTIFY_SCOPE = ' '.join([
 ])
 
 # ==============================================
+# Spotify Web Playback SDK Configuration
+# ==============================================
+# Web Playback SDK는 클라이언트에서만 동작 (JavaScript)
+# 토큰 발급은 백엔드에서 수행
+ENABLE_WEB_PLAYBACK = True  # Web Playback SDK 활성화
+WEB_PLAYBACK_UPDATE_INTERVAL = 3000  # ms, 재생 상태 업데이트 간격
+
+# ==============================================
 # Gemini API Configuration
 # ==============================================
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
@@ -105,13 +113,5 @@ def validate_config():
         print("\n⚠️  Configuration Errors:")
         for error in errors:
             print(f"  - {error}")
-        print("\n💡 Please check your .env file and make sure all API keys are set.\n")
-        return False
     
-    return True
-
-
-# Validate on import
-if not validate_config():
-    print("⚠️  Warning: Some configuration values are missing.")
-    print("The application may not work correctly without proper API keys.\n")
+    return len(errors) == 0

@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <title>Music DAC · Now Playing</title>
     <link rel="stylesheet" href="../css/style.css" />
-    <script defer src="../js/main.js"></script>
   </head>
   <body>
     <div class="container">
@@ -46,8 +45,12 @@
       </section>
 
       <footer class="status">
-        <span id="player-status">Waiting for playback state…</span>
+        <span id="player-status">Initializing Web Playback SDK…</span>
       </footer>
     </div>
+
+    <!-- Spotify Web Playback SDK -->
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script defer src="../js/main.js"></script>
   </body>
 </html>

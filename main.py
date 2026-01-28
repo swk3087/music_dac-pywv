@@ -201,6 +201,17 @@ class MusicDACApi:
         success = self.app.load_screen(screen)
         return {"success": success, "screen": screen}
 
+    # Web Playback SDK -------------------------------------------------------
+    def get_playback_token(self) -> Dict[str, Any]:
+        """
+        Web Playback SDK용 액세스 토큰 발급
+        클라이언트에서 Spotify.Player를 생성할 때 필요
+        """
+        token = self.app.spotify.get_access_token()
+        if token:
+            return {"success": True, "token": token}
+        return {"success": False, "token": None}
+
     # Spotify ----------------------------------------------------------------
     def search_tracks(self, query: str) -> Dict[str, Any]:
         results = self.app.spotify.search(query, search_type="track", limit=config.MAX_SEARCH_RESULTS)
